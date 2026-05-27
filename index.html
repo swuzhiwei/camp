@@ -25,6 +25,7 @@
 
     /* Combined colors */
     --amber: #8a5c1a;   --amber-bg: #fdf3e3;   --amber-border: #e8cfa0;   /* Steven + Rachel */
+    --slate: #4a5b6b;   --slate-bg: #e6edf2;   --slate-border: #b8c8d4;   /* Stewart + Sarah */
     --blue: #1e4f7a;    --blue-bg: #e8f1f9;    --blue-border: #a8c6e0;    /* All five */
 
     --radius: 12px;
@@ -175,6 +176,7 @@
     padding-bottom: 2px;
   }
   .filters::-webkit-scrollbar { display: none; }
+  .filters-row-2 { margin-top: 6px; }
   .filter-btn {
     flex-shrink: 0;
     padding: 6px 12px;
@@ -196,6 +198,7 @@
   .filter-btn.f-Stewart      { border-color: var(--purple-border); background: var(--purple-bg);     color: var(--purple); }
   .filter-btn.f-Sarah        { border-color: var(--accent-border); background: var(--accent-bg);     color: var(--accent); }
   .filter-btn.f-stevenRachel { border-color: var(--amber-border);  background: var(--amber-bg);      color: var(--amber); }
+  .filter-btn.f-stewartSarah { border-color: var(--slate-border);  background: var(--slate-bg);      color: var(--slate); }
   .filter-btn.f-allFive      { border-color: var(--blue-border);   background: var(--blue-bg);       color: var(--blue); }
 
   /* ── Category blocks ── */
@@ -328,6 +331,7 @@
   .tier-p-stewart { color: var(--purple);     background: var(--purple-bg); border: 1px solid var(--purple-border); }
   .tier-p-sarah   { color: var(--accent);     background: var(--accent-bg); border: 1px solid var(--accent-border); }
   .tier-p-couple  { color: var(--amber);      background: var(--amber-bg);  border: 1px solid var(--amber-border); }
+  .tier-p-couple2 { color: var(--slate);      background: var(--slate-bg);  border: 1px solid var(--slate-border); }
   .tier-p-all     { color: var(--blue);       background: var(--blue-bg);   border: 1px solid var(--blue-border); }
   .tier-p-custom  { color: var(--text-muted); background: var(--bg-muted);  border: 1px solid var(--border); }
   .tier-p-none    { color: var(--text-faint); background: var(--bg-muted);  border: 1px dashed var(--border); }
@@ -603,15 +607,18 @@
 <!-- Filter -->
 <div class="section" style="margin-top:12px;">
   <div class="section-label">Filter by packer</div>
-  <div class="filters">
-    <button class="filter-btn" data-filter="all"          onclick="setFilter('all')">All items</button>
-    <button class="filter-btn" data-filter="Steven"       onclick="setFilter('Steven')">Steven</button>
-    <button class="filter-btn" data-filter="Rachel"       onclick="setFilter('Rachel')">Rachel</button>
-    <button class="filter-btn" data-filter="Mark"         onclick="setFilter('Mark')">Mark</button>
-    <button class="filter-btn" data-filter="Stewart"      onclick="setFilter('Stewart')">Stewart</button>
-    <button class="filter-btn" data-filter="Sarah"        onclick="setFilter('Sarah')">Sarah</button>
-    <button class="filter-btn" data-filter="stevenRachel" onclick="setFilter('stevenRachel')">Steven + Rachel</button>
+  <div class="filters filters-row-1">
+    <button class="filter-btn" data-filter="all"     onclick="setFilter('all')">All items</button>
+    <button class="filter-btn" data-filter="Steven"  onclick="setFilter('Steven')">Steven</button>
+    <button class="filter-btn" data-filter="Rachel"  onclick="setFilter('Rachel')">Rachel</button>
+    <button class="filter-btn" data-filter="Mark"    onclick="setFilter('Mark')">Mark</button>
+    <button class="filter-btn" data-filter="Stewart" onclick="setFilter('Stewart')">Stewart</button>
+    <button class="filter-btn" data-filter="Sarah"   onclick="setFilter('Sarah')">Sarah</button>
+  </div>
+  <div class="filters filters-row-2">
     <button class="filter-btn" data-filter="allFive"      onclick="setFilter('allFive')">All five</button>
+    <button class="filter-btn" data-filter="stevenRachel" onclick="setFilter('stevenRachel')">Steven + Rachel</button>
+    <button class="filter-btn" data-filter="stewartSarah" onclick="setFilter('stewartSarah')">Stewart + Sarah</button>
   </div>
 </div>
 
@@ -657,12 +664,7 @@ const DOC = db.collection("checklists").doc("shenandoah-2026");
 
 // ── Packer model ──
 const PEOPLE = ["Steven", "Rachel", "Mark", "Stewart", "Sarah"];
-const DEFAULT_ASSIGN = {
-  personal: ["Steven"],
-  couple:   ["Steven", "Rachel"],
-  group:    ["Steven", "Rachel", "Mark", "Stewart", "Sarah"]
-};
-const VALID_FILTERS = ["all", "Steven", "Rachel", "Mark", "Stewart", "Sarah", "stevenRachel", "allFive"];
+const VALID_FILTERS = ["all", "Steven", "Rachel", "Mark", "Stewart", "Sarah", "stevenRachel", "stewartSarah", "allFive"];
 
 function canonArr(arr) {
   return [...arr].sort((a, b) => PEOPLE.indexOf(a) - PEOPLE.indexOf(b));
@@ -673,15 +675,15 @@ function canonStr(arr) {
 function getAssignment(k) {
   if (assignments[k]) return assignments[k];
   const info = itemMap[k];
-  if (!info) return [];
-  return DEFAULT_ASSIGN[info.tier] || [];
+  return info ? info.assign : [];
 }
 function filterMatches(assign, f) {
   if (f === "all") return true;
   const c = canonStr(assign);
   if (["Steven","Rachel","Mark","Stewart","Sarah"].includes(f)) return c === f;
   if (f === "stevenRachel") return c === "Steven|Rachel";
-  if (f === "allFive") return c === PEOPLE.join("|");
+  if (f === "stewartSarah") return c === "Stewart|Sarah";
+  if (f === "allFive")      return c === PEOPLE.join("|");
   return false;
 }
 function badgeFor(assign) {
@@ -691,22 +693,42 @@ function badgeFor(assign) {
   if (c === "Mark")    return { label: "Mark",    cls: "p-mark" };
   if (c === "Stewart") return { label: "Stewart", cls: "p-stewart" };
   if (c === "Sarah")   return { label: "Sarah",   cls: "p-sarah" };
-  if (c === "Steven|Rachel")    return { label: "Steven + Rachel", cls: "p-couple" };
-  if (c === PEOPLE.join("|"))   return { label: "All five",        cls: "p-all" };
-  if (assign.length === 0)      return { label: "Unassigned",      cls: "p-none" };
-  if (assign.length <= 2)       return { label: canonArr(assign).join(" + "), cls: "p-custom" };
+  if (c === "Steven|Rachel")  return { label: "Steven + Rachel",  cls: "p-couple" };
+  if (c === "Stewart|Sarah")  return { label: "Stewart + Sarah",  cls: "p-couple2" };
+  if (c === PEOPLE.join("|")) return { label: "All five",         cls: "p-all" };
+  if (assign.length === 0)    return { label: "Unassigned",       cls: "p-none" };
+  if (assign.length <= 2)     return { label: canonArr(assign).join(" + "), cls: "p-custom" };
   return { label: `${assign.length} packers`, cls: "p-custom" };
 }
 function personClass(p) {
   return { Steven: "p-steven", Rachel: "p-rachel", Mark: "p-mark", Stewart: "p-stewart", Sarah: "p-sarah" }[p];
 }
 
-// ── Scenarios & data ──
+// ── Data builder helpers ──
+// `personal(name, note?)` → returns 5 copies, one per person
+function personal(name, note) {
+  return PEOPLE.map(p => note ? { n: name, assign: [p], note } : { n: name, assign: [p] });
+}
+// `couple(name, scaledName, note?)` → returns Steven+Rachel, Stewart+Sarah, and Mark scaled
+function couple(name, scaledName, note) {
+  const r = [
+    note ? { n: name, assign: ["Steven", "Rachel"], note } : { n: name, assign: ["Steven", "Rachel"] },
+    note ? { n: name, assign: ["Stewart", "Sarah"], note } : { n: name, assign: ["Stewart", "Sarah"] },
+    note ? { n: scaledName, assign: ["Mark"], note } : { n: scaledName, assign: ["Mark"] }
+  ];
+  return r;
+}
+// `group(name, note?)` → single item assigned to all five
+function group(name, note) {
+  return [note ? { n: name, assign: PEOPLE.slice(), note } : { n: name, assign: PEOPLE.slice() }];
+}
+
+// ── Scenarios ──
 const SC = {
   allTent: {
     label: "A: All-tent",
-    desc: "All five sleep in tents. The two couples share the 4-person tent you already own. You'll need to acquire a 2-person tent for the solo individual.",
-    note: "To acquire: 2-person tent for the solo individual (budget options ~$80–150)"
+    desc: "All five sleep in tents. The two couples share the 4-person tent you already own. Mark sleeps in his own 2-person tent.",
+    note: "To acquire: 2-person tent for Mark (budget options ~$80–150)"
   },
   cabinPrimary: {
     label: "B: Cabin primary",
@@ -715,129 +737,142 @@ const SC = {
   },
   hybrid: {
     label: "C: Hybrid",
-    desc: "One couple uses the 4-person tent you already own. The other couple and the solo individual stay in the cabin. No second tent needed.",
+    desc: "Steven + Rachel use the 4-person tent. Stewart + Sarah and Mark stay in the cabin. No second tent needed.",
     note: "Recommended: best balance of comfort and reduced gear"
   }
 };
 
 const SHELTER = {
   allTent: [
-    { n: "Sleeping bag (40°F rated) × 2", t: "couple", note: "June nights at Shenandoah elevation: 48–55°F" },
-    { n: "Sleeping pad × 2", t: "couple" },
-    { n: "Pillow or inflatable pillow × 2", t: "couple" },
-    { n: "4-person tent (already owned)", t: "couple", note: "Fits both couples comfortably" },
-    { n: "Tent footprint / ground cloth", t: "couple", note: "Protects tent floor from moisture and abrasion" },
-    { n: "Tent stakes + mallet", t: "couple" },
-    { n: "Tent repair kit", t: "couple" },
-    { n: "2-person tent (to acquire)", t: "group", note: "For the solo individual; budget options ~$80–150" },
-    { n: "Sleeping bag × 1 — solo individual", t: "group", note: "They should bring their own; coordinate early" },
-    { n: "Sleeping pad × 1 — solo individual", t: "group" },
-    { n: "Pillow × 1 — solo individual", t: "group" }
+    // Bedding — each unit pair / solo
+    { n: "Sleeping bag (40°F rated) × 2", assign: ["Steven", "Rachel"], note: "June nights at Shenandoah elevation: 48–55°F" },
+    { n: "Sleeping bag (40°F rated) × 2", assign: ["Stewart", "Sarah"], note: "June nights at Shenandoah elevation: 48–55°F" },
+    { n: "Sleeping bag (40°F rated) × 1", assign: ["Mark"],             note: "June nights at Shenandoah elevation: 48–55°F" },
+    { n: "Sleeping pad × 2",              assign: ["Steven", "Rachel"] },
+    { n: "Sleeping pad × 2",              assign: ["Stewart", "Sarah"] },
+    { n: "Sleeping pad × 1",              assign: ["Mark"] },
+    { n: "Pillow or inflatable pillow × 2", assign: ["Steven", "Rachel"] },
+    { n: "Pillow or inflatable pillow × 2", assign: ["Stewart", "Sarah"] },
+    { n: "Pillow or inflatable pillow × 1", assign: ["Mark"] },
+    // Tents and setup
+    { n: "4-person tent (already owned)", assign: ["Steven", "Rachel"], note: "Shared with Stewart + Sarah; fits four comfortably" },
+    { n: "Tent footprint / ground cloth", assign: ["Steven", "Rachel"], note: "For the 4-person tent" },
+    { n: "Tent stakes + mallet",          assign: ["Steven", "Rachel"] },
+    { n: "Tent repair kit",               assign: ["Steven", "Rachel"] },
+    { n: "2-person tent (to acquire)",    assign: ["Mark"], note: "Budget options ~$80–150" }
   ],
   cabinPrimary: [
-    { n: "Sleeping bag OR twin sheets + light blanket × 2", t: "couple", note: "Confirm with Lewis Mountain before deciding what to pack" },
-    { n: "Pillow × 2", t: "couple", note: "Cabins rarely provide pillows" },
-    { n: "Sleeping bag or sheets × 3 — rest of group", t: "group", note: "Other couple + solo individual; coordinate with them" },
-    { n: "Pillow × 3 — rest of group", t: "group" }
+    { n: "Sleeping bag OR twin sheets + light blanket × 2", assign: ["Steven", "Rachel"], note: "Confirm with Lewis Mountain before deciding what to pack" },
+    { n: "Sleeping bag OR twin sheets + light blanket × 2", assign: ["Stewart", "Sarah"], note: "Confirm with Lewis Mountain before deciding what to pack" },
+    { n: "Sleeping bag OR twin sheets + light blanket × 1", assign: ["Mark"],             note: "Confirm with Lewis Mountain before deciding what to pack" },
+    { n: "Pillow × 2", assign: ["Steven", "Rachel"], note: "Cabins rarely provide pillows" },
+    { n: "Pillow × 2", assign: ["Stewart", "Sarah"], note: "Cabins rarely provide pillows" },
+    { n: "Pillow × 1", assign: ["Mark"],             note: "Cabins rarely provide pillows" }
   ],
   hybrid: [
-    { n: "Sleeping bag (40°F rated) × 2", t: "couple", note: "For the couple in the tent; June nights 48–55°F" },
-    { n: "Sleeping pad × 2", t: "couple" },
-    { n: "Pillow × 2", t: "couple" },
-    { n: "4-person tent (already owned)", t: "couple", note: "For one couple; spacious for two people" },
-    { n: "Tent footprint / ground cloth", t: "couple" },
-    { n: "Tent stakes + mallet", t: "couple" },
-    { n: "Sleeping bag or sheets × 3 — cabin occupants", t: "group", note: "Other couple + solo; check linens with Lewis Mountain" },
-    { n: "Pillow × 3 — cabin occupants", t: "group" }
+    // Steven + Rachel in the tent
+    { n: "Sleeping bag (40°F rated) × 2", assign: ["Steven", "Rachel"], note: "For the couple in the tent; June nights 48–55°F" },
+    { n: "Sleeping pad × 2",              assign: ["Steven", "Rachel"] },
+    { n: "Pillow × 2",                    assign: ["Steven", "Rachel"] },
+    { n: "4-person tent (already owned)", assign: ["Steven", "Rachel"], note: "Spacious for two people" },
+    { n: "Tent footprint / ground cloth", assign: ["Steven", "Rachel"] },
+    { n: "Tent stakes + mallet",          assign: ["Steven", "Rachel"] },
+    // Stewart + Sarah in the cabin
+    { n: "Sleeping bag or sheets × 2",    assign: ["Stewart", "Sarah"], note: "Cabin occupants; check linens with Lewis Mountain" },
+    { n: "Pillow × 2",                    assign: ["Stewart", "Sarah"] },
+    // Mark in the cabin
+    { n: "Sleeping bag or sheets × 1",    assign: ["Mark"], note: "Cabin occupant; check linens with Lewis Mountain" },
+    { n: "Pillow × 1",                    assign: ["Mark"] }
   ]
 };
 
+// ── Base data ──
 const BASE = [
   { cat: "Clothing & footwear", icon: "👕", items: [
-    { n: "3 days of clothes + 1 spare set", t: "personal", note: "Moisture-wicking fabrics recommended" },
-    { n: "Lightweight fleece or hoodie", t: "personal", note: "Evenings drop to 48–55°F at elevation" },
-    { n: "Rain jacket", t: "personal", note: "June averages 5\" of rainfall in Shenandoah" },
-    { n: "Hiking boots or trail shoes (broken in)", t: "personal", note: "Do not wear new boots on this trip" },
-    { n: "Camp shoes or sandals", t: "personal" },
-    { n: "Moisture-wicking socks × 3–4 pairs", t: "personal", note: "Wool or synthetic; pack extras to prevent blisters" },
-    { n: "Sun hat or baseball cap", t: "personal" },
-    { n: "Sunglasses", t: "personal" }
+    ...personal("3 days of clothes + 1 spare set", "Moisture-wicking fabrics recommended"),
+    ...personal("Lightweight fleece or hoodie", "Evenings drop to 48–55°F at elevation"),
+    ...personal("Rain jacket", "June averages 5\" of rainfall in Shenandoah"),
+    ...personal("Hiking boots or trail shoes (broken in)", "Do not wear new boots on this trip"),
+    ...personal("Camp shoes or sandals"),
+    ...personal("Moisture-wicking socks × 3–4 pairs", "Wool or synthetic; pack extras to prevent blisters"),
+    ...personal("Sun hat or baseball cap"),
+    ...personal("Sunglasses")
   ]},
   { cat: "Personal hygiene & health", icon: "🧴", items: [
-    { n: "Toothbrush + toothpaste", t: "personal" },
-    { n: "Deodorant", t: "personal" },
-    { n: "Biodegradable soap / body wash", t: "personal" },
-    { n: "Prescription medications", t: "personal" },
-    { n: "Personal first aid supplements (allergy, etc.)", t: "personal" },
-    { n: "Sunscreen SPF 30+ × 2 bottles", t: "couple", note: "Reapply every 2 hours on hikes" },
-    { n: "Bug repellent", t: "couple", note: "Apply daily — ticks are common in Shenandoah in June" },
-    { n: "Hand sanitizer", t: "couple" },
-    { n: "Wet wipes / baby wipes", t: "couple" },
-    { n: "Extra toilet paper", t: "couple" },
-    { n: "Camp towels × 2", t: "couple" }
+    ...personal("Toothbrush + toothpaste"),
+    ...personal("Deodorant"),
+    ...personal("Biodegradable soap / body wash"),
+    ...personal("Prescription medications"),
+    ...personal("Personal first aid supplements (allergy, etc.)"),
+    ...couple("Sunscreen SPF 30+ × 2 bottles", "Sunscreen SPF 30+ × 1 bottle", "Reapply every 2 hours on hikes"),
+    ...couple("Bug repellent", "Bug repellent", "Apply daily — ticks are common in Shenandoah in June"),
+    ...couple("Hand sanitizer", "Hand sanitizer"),
+    ...couple("Wet wipes / baby wipes", "Wet wipes / baby wipes"),
+    ...couple("Extra toilet paper", "Extra toilet paper"),
+    ...couple("Camp towels × 2", "Camp towel × 1")
   ]},
   { cat: "Electronics & documents", icon: "📱", items: [
-    { n: "Phone + charging cable", t: "personal" },
-    { n: "Headlamp + extra batteries", t: "personal", note: "Essential after dark; one per person is ideal" },
-    { n: "Portable power bank", t: "personal" },
-    { n: "ID / wallet / credit card", t: "personal" },
-    { n: "Health insurance card", t: "personal" },
-    { n: "Reservation confirmation (downloaded offline)", t: "personal", note: "Cell service is limited inside the park" },
-    { n: "Camera (optional)", t: "couple" }
+    ...personal("Phone + charging cable"),
+    ...personal("Headlamp + extra batteries", "Essential after dark; one per person is ideal"),
+    ...personal("Portable power bank"),
+    ...personal("ID / wallet / credit card"),
+    ...personal("Health insurance card"),
+    ...personal("Reservation confirmation (downloaded offline)", "Cell service is limited inside the park"),
+    ...couple("Camera (optional)", "Camera (optional)")
   ]},
   { cat: "Food & cooking", icon: "🍳", items: [
-    { n: "Prep-ahead meals (breakfasts, lunches, dinners)", t: "group", note: "3 full days: June 5 dinner through June 7 lunch" },
-    { n: "Fresh items for 1–2 cast iron meals", t: "group", note: "Acquire on the way; eggs, steak, potatoes are a reliable combo" },
-    { n: "Snacks (trail mix, bars, jerky, fruit)", t: "group" },
-    { n: "Coffee, tea, or hot cocoa + supplies", t: "group" },
-    { n: "Cooking oil + salt, pepper, basic spices", t: "group" },
-    { n: "Camp stove + fuel canisters × 2", t: "group", note: "2 canisters to avoid running low mid-trip" },
-    { n: "Cast iron skillet + lid", t: "group" },
-    { n: "Medium pot", t: "group" },
-    { n: "Spatula, tongs, ladle", t: "group" },
-    { n: "Chef's knife + cutting board", t: "group" },
-    { n: "Can opener / bottle opener", t: "group" },
-    { n: "Plates / bowls × 5", t: "group" },
-    { n: "Cups / mugs × 5", t: "group" },
-    { n: "Utensils (fork, knife, spoon) × 5", t: "group" },
-    { n: "Biodegradable dish soap + scrubber", t: "group" },
-    { n: "Dish towel + camp wash basin", t: "group" },
-    { n: "Aluminum foil + resealable bags", t: "group" },
-    { n: "Paper towels", t: "group" },
-    { n: "Roasting sticks + s'mores supplies (optional)", t: "group" }
+    ...group("Prep-ahead meals (breakfasts, lunches, dinners)", "3 full days: June 5 dinner through June 7 lunch"),
+    ...group("Fresh items for 1–2 cast iron meals", "Acquire on the way; eggs, steak, potatoes are a reliable combo"),
+    ...group("Snacks (trail mix, bars, jerky, fruit)"),
+    ...group("Coffee, tea, or hot cocoa + supplies"),
+    ...group("Cooking oil + salt, pepper, basic spices"),
+    ...group("Camp stove + fuel canisters × 2", "2 canisters to avoid running low mid-trip"),
+    ...group("Cast iron skillet + lid"),
+    ...group("Medium pot"),
+    ...group("Spatula, tongs, ladle"),
+    ...group("Chef's knife + cutting board"),
+    ...group("Can opener / bottle opener"),
+    ...group("Plates / bowls × 5"),
+    ...group("Cups / mugs × 5"),
+    ...group("Utensils (fork, knife, spoon) × 5"),
+    ...group("Biodegradable dish soap + scrubber"),
+    ...group("Dish towel + camp wash basin"),
+    ...group("Aluminum foil + resealable bags"),
+    ...group("Paper towels"),
+    ...group("Roasting sticks + s'mores supplies (optional)")
   ]},
   { cat: "Water & food storage", icon: "💧", items: [
-    { n: "Reusable water bottles × 5", t: "group" },
-    { n: "Water jugs (2–3 gallon) for camp", t: "group" },
-    { n: "Water filter or purification tablets", t: "group", note: "For hikes away from camp" },
-    { n: "Large cooler with ice", t: "group" },
-    { n: "Bear-resistant food storage OR store in vehicle overnight", t: "group", note: "Required by Shenandoah NP — bears are active year-round" }
+    ...group("Reusable water bottles × 5"),
+    ...group("Water jugs (2–3 gallon) for camp"),
+    ...group("Water filter or purification tablets", "For hikes away from camp"),
+    ...group("Large cooler with ice"),
+    ...group("Bear-resistant food storage OR store in vehicle overnight", "Required by Shenandoah NP — bears are active year-round")
   ]},
   { cat: "Fire & camp setup", icon: "🔥", items: [
-    { n: "Waterproof matches + lighter × 2", t: "group" },
-    { n: "Fire starter / kindling", t: "group" },
-    { n: "Firewood (purchase at campground)", t: "group", note: "Don't bring from home — invasive species risk" },
-    { n: "Fire gloves / heat-resistant mitt", t: "group" },
-    { n: "Tarp (shade and rain cover for camp)", t: "group" },
-    { n: "Rope / paracord × 30 ft", t: "group", note: "Tarp rigging, clothesline, general use" },
-    { n: "Clothespins / clips", t: "group" }
+    ...group("Waterproof matches + lighter × 2"),
+    ...group("Fire starter / kindling"),
+    ...group("Firewood (purchase at campground)", "Don't bring from home — invasive species risk"),
+    ...group("Fire gloves / heat-resistant mitt"),
+    ...group("Tarp (shade and rain cover for camp)"),
+    ...group("Rope / paracord × 30 ft", "Tarp rigging, clothesline, general use"),
+    ...group("Clothespins / clips")
   ]},
   { cat: "Navigation & safety", icon: "🧭", items: [
-    { n: "Shenandoah NP trail map (printed)", t: "group", note: "Print from NPS website before departing" },
-    { n: "Compass", t: "group" },
-    { n: "Offline trail maps (AllTrails or NPS app)", t: "group" },
-    { n: "Comprehensive first aid kit", t: "group" },
-    { n: "Moleskin / blister treatment", t: "group", note: "Treat hotspots early before they become blisters" },
-    { n: "Tick removal tool", t: "group", note: "Ticks are very common in Shenandoah in June — check nightly" },
-    { n: "Pain reliever + antihistamine", t: "group" },
-    { n: "Emergency whistle × 2", t: "group" }
+    ...group("Shenandoah NP trail map (printed)", "Print from NPS website before departing"),
+    ...group("Compass"),
+    ...group("Offline trail maps (AllTrails or NPS app)"),
+    ...group("Comprehensive first aid kit"),
+    ...group("Moleskin / blister treatment", "Treat hotspots early before they become blisters"),
+    ...group("Tick removal tool", "Ticks are very common in Shenandoah in June — check nightly"),
+    ...group("Pain reliever + antihistamine"),
+    ...group("Emergency whistle × 2")
   ]},
   { cat: "Seating, tools & misc", icon: "🪑", items: [
-    { n: "Camp chairs × 5", t: "group" },
-    { n: "Folding camp table (optional)", t: "group" },
-    { n: "Multi-tool or Swiss army knife", t: "group" },
-    { n: "Duct tape + zip ties", t: "group" },
-    { n: "Trash bags (large) × 6+", t: "group" }
+    ...group("Camp chairs × 5"),
+    ...group("Folding camp table (optional)"),
+    ...group("Multi-tool or Swiss army knife"),
+    ...group("Duct tape + zip ties"),
+    ...group("Trash bags (large) × 6+")
   ]}
 ];
 
@@ -859,7 +894,7 @@ function buildItemMap() {
   itemMap = {};
   for (const c of allCats()) {
     for (const it of c.items) {
-      itemMap[key(c.cat, it.oi)] = { tier: it.t, name: it.n };
+      itemMap[key(c.cat, it.oi)] = { assign: it.assign, name: it.n };
     }
   }
 }
