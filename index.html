@@ -397,6 +397,8 @@
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -456,6 +458,23 @@
 <div class="toast" id="toast"></div>
 
 <script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDk38lSNWPSE3FQ9fc--8zTkFuMX-SK8_M",
+  authDomain: "shenandoah-packing-list.firebaseapp.com",
+  projectId: "shenandoah-packing-list",
+  storageBucket: "shenandoah-packing-list.firebasestorage.app",
+  messagingSenderId: "1072868162373",
+  appId: "1:1072868162373:web:86973deaa8ff5752d7dc2c"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const DOC = db.collection("checklists").doc("shenandoah-2026");
+
+function saveToFirestore() {
+  DOC.set({ checked, scenario, filter })
+    .catch(() => showToast("Save failed — check connection"));
+}
 const SC = {
   allTent: {
     label: "A: All-tent",
@@ -645,6 +664,7 @@ function importData(e) {
       if (SC[data.scenario]) scenario = data.scenario;
       if (["all", "personal", "couple", "group"].includes(data.filter)) filter = data.filter;
       render();
+      saveToFirestore();
       showToast("Imported successfully");
     } catch { showToast("Import failed — could not parse file"); }
     e.target.value = "";
@@ -711,12 +731,24 @@ function renderCats() {
 }
 
 function render() { renderTabs(); renderScNote(); renderFilters(); renderProgress(); renderCats(); }
-function setScenario(s) { scenario = s; render(); }
-function setFilter(f) { filter = f; render(); }
+function setScenario(s) { scenario = s; render(); saveToFirestore(); }
+function setFilter(f) { filter = f; render(); saveToFirestore(); }
 function toggleCat(cat) { collapsed[cat] = collapsed[cat] !== true; renderCats(); }
-function toggleItem(k) { checked[k] = !checked[k]; render(); }
+function toggleItem(k) { checked[k] = !checked[k]; render(); saveToFirestore(); }
 
-render();
+DOC.onSnapshot({ includeMetadataChanges: true }, snap => {
+  if (snap.metadata.hasPendingWrites) return;
+  if (snap.exists) {
+    const data = snap.data();
+    checked = data.checked || {};
+    if (SC[data.scenario]) scenario = data.scenario;
+    if (["all","personal","couple","group"].includes(data.filter)) filter = data.filter;
+  }
+  render();
+}, () => {
+  showToast("Connection error — showing local state");
+  render();
+});
 </script>
 </body>
 </html>
