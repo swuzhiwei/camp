@@ -396,12 +396,83 @@
     z-index: 999;
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.gate {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 9999;
+  padding: 32px;
+}
+.gate-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 300;
+  color: var(--text);
+  text-align: center;
+}
+.gate-title em { font-style: italic; color: #d4937e; }
+.gate-sub {
+  font-size: 12px;
+  color: var(--text-faint);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+}
+.gate-input {
+  width: 100%;
+  max-width: 280px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  font-family: var(--font-mono);
+  font-size: 16px;
+  color: var(--text);
+  text-align: center;
+  outline: none;
+}
+.gate-input:focus { border-color: var(--accent); }
+.gate-btn {
+  width: 100%;
+  max-width: 280px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--text);
+  color: var(--bg);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+.gate-btn:active { opacity: 0.85; }
+.gate-error {
+  font-size: 12px;
+  color: var(--accent);
+  min-height: 16px;
+  text-align: center;
+}
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 </head>
 <body>
-
+<div class="gate" id="gate">
+  <p class="gate-sub">Lewis Mountain Campground · Jun 5–7</p>
+  <p class="gate-title">Shenandoah<br><em>Packing List</em></p>
+  <input class="gate-input" id="gate-input" type="password"
+    placeholder="Enter password"
+    onkeydown="if(event.key==='Enter')tryUnlock()">
+  <button class="gate-btn" onclick="tryUnlock()">Unlock</button>
+  <p class="gate-error" id="gate-error"></p>
+</div>
 <!-- Header -->
 <div class="header">
   <p class="header-eyebrow">Shenandoah National Park</p>
@@ -736,18 +807,42 @@ function setFilter(f) { filter = f; render(); saveToFirestore(); }
 function toggleCat(cat) { collapsed[cat] = collapsed[cat] !== true; renderCats(); }
 function toggleItem(k) { checked[k] = !checked[k]; render(); saveToFirestore(); }
 
-DOC.onSnapshot({ includeMetadataChanges: true }, snap => {
-  if (snap.metadata.hasPendingWrites) return;
-  if (snap.exists) {
-    const data = snap.data();
-    checked = data.checked || {};
-    if (SC[data.scenario]) scenario = data.scenario;
-    if (["all","personal","couple","group"].includes(data.filter)) filter = data.filter;
+const PASS = "0429"; // change this to whatever you want
+
+function tryUnlock() {
+  const val = document.getElementById("gate-input").value;
+  if (val !== PASS) {
+    document.getElementById("gate-error").textContent = "Incorrect password.";
+    return;
   }
-  render();
-}, () => {
-  showToast("Connection error — showing local state");
-  render();
+  document.getElementById("gate-error").textContent = "";
+  firebase.auth().signInAnonymously()
+    .then(startApp)
+    .catch(() => showToast("Auth error — try refreshing"));
+}
+
+function startApp() {
+  document.getElementById("gate").style.display = "none";
+  DOC.onSnapshot({ includeMetadataChanges: true }, snap => {
+    if (snap.metadata.hasPendingWrites) return;
+    if (snap.exists) {
+      const data = snap.data();
+      checked = data.checked || {};
+      if (SC[data.scenario]) scenario = data.scenario;
+      if (["all","personal","couple","group"].includes(data.filter)) filter = data.filter;
+    }
+    render();
+  }, () => {
+    showToast("Connection error — showing local state");
+    render();
+  });
+}
+
+// If already signed in from a previous visit on this device, skip the gate
+firebase.auth().onAuthStateChanged(user => {
+  if (user) {
+    startApp();
+  }
 });
 </script>
 </body>
