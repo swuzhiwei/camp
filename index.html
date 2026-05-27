@@ -15,16 +15,18 @@
     --text-muted: #7a7569;
     --text-faint: #b0ab9f;
     --border: #ddd9d1;
-    --green: #3a6b4a;
-    --green-bg: #eaf2ec;
-    --green-border: #b8d9bf;
-    --amber: #8a5c1a;
-    --amber-bg: #fdf3e3;
-    --amber-border: #e8cfa0;
-    --blue: #1e4f7a;
-    --blue-bg: #e8f1f9;
-    --blue-border: #a8c6e0;
-    --accent: #c84b2f;
+
+    /* Person colors */
+    --green: #3a6b4a;   --green-bg: #eaf2ec;   --green-border: #b8d9bf;   /* Steven */
+    --rose: #8a3f5c;    --rose-bg: #f6e8ec;    --rose-border: #d4b3bf;    /* Rachel */
+    --teal: #1e6b6e;    --teal-bg: #e0eded;    --teal-border: #a8c8c8;    /* Mark */
+    --purple: #5a4382;  --purple-bg: #ece8f4;  --purple-border: #c3b9d4;  /* Stewart */
+    --accent: #c84b2f;  --accent-bg: #fbe9e3;  --accent-border: #e6b8a9;  /* Sarah */
+
+    /* Combined colors */
+    --amber: #8a5c1a;   --amber-bg: #fdf3e3;   --amber-border: #e8cfa0;   /* Steven + Rachel */
+    --blue: #1e4f7a;    --blue-bg: #e8f1f9;    --blue-border: #a8c6e0;    /* All five */
+
     --radius: 12px;
     --radius-sm: 8px;
     --font-display: 'Fraunces', Georgia, serif;
@@ -104,33 +106,6 @@
     min-width: 60px;
     text-align: right;
   }
-
-  /* ── IO Buttons ── */
-  .io-row {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-  }
-  .io-btn {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 9px 12px;
-    border-radius: var(--radius-sm);
-    font-family: var(--font-mono);
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    cursor: pointer;
-    border: 1px solid rgba(255,255,255,0.18);
-    background: rgba(255,255,255,0.08);
-    color: var(--bg);
-    transition: background 0.15s;
-  }
-  .io-btn:active { background: rgba(255,255,255,0.18); }
-  .io-btn svg { flex-shrink: 0; }
 
   /* ── Scenario tabs ── */
   .section { padding: 12px 16px 0; }
@@ -214,10 +189,14 @@
     transition: all 0.15s;
     white-space: nowrap;
   }
-  .filter-btn.f-all    { border-color: var(--text);         background: var(--text);         color: var(--bg); }
-  .filter-btn.f-personal { border-color: var(--green-border); background: var(--green-bg);  color: var(--green); }
-  .filter-btn.f-couple   { border-color: var(--amber-border); background: var(--amber-bg);  color: var(--amber); }
-  .filter-btn.f-group    { border-color: var(--blue-border);  background: var(--blue-bg);   color: var(--blue); }
+  .filter-btn.f-all          { border-color: var(--text);          background: var(--text);          color: var(--bg); }
+  .filter-btn.f-Steven       { border-color: var(--green-border);  background: var(--green-bg);      color: var(--green); }
+  .filter-btn.f-Rachel       { border-color: var(--rose-border);   background: var(--rose-bg);       color: var(--rose); }
+  .filter-btn.f-Mark         { border-color: var(--teal-border);   background: var(--teal-bg);       color: var(--teal); }
+  .filter-btn.f-Stewart      { border-color: var(--purple-border); background: var(--purple-bg);     color: var(--purple); }
+  .filter-btn.f-Sarah        { border-color: var(--accent-border); background: var(--accent-bg);     color: var(--accent); }
+  .filter-btn.f-stevenRachel { border-color: var(--amber-border);  background: var(--amber-bg);      color: var(--amber); }
+  .filter-btn.f-allFive      { border-color: var(--blue-border);   background: var(--blue-bg);       color: var(--blue); }
 
   /* ── Category blocks ── */
   .cat-list { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
@@ -312,9 +291,11 @@
     transition: all 0.15s;
     font-size: 11px;
   }
-  .item-row.done.t-personal .chk { border-color: var(--green); background: var(--green-bg); color: var(--green); }
-  .item-row.done.t-couple  .chk  { border-color: var(--amber); background: var(--amber-bg); color: var(--amber); }
-  .item-row.done.t-group   .chk  { border-color: var(--blue);  background: var(--blue-bg);  color: var(--blue);  }
+  .item-row.done .chk {
+    border-color: var(--text);
+    background: var(--bg-muted);
+    color: var(--text);
+  }
 
   .item-body { flex: 1; min-width: 0; }
   .item-name-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
@@ -333,14 +314,23 @@
     font-weight: 500;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    padding: 2px 6px;
+    padding: 3px 8px;
     border-radius: 4px;
     flex-shrink: 0;
     white-space: nowrap;
+    cursor: pointer;
+    transition: opacity 0.15s;
   }
-  .tier-personal { color: var(--green); background: var(--green-bg); border: 1px solid var(--green-border); }
-  .tier-couple   { color: var(--amber); background: var(--amber-bg); border: 1px solid var(--amber-border); }
-  .tier-group    { color: var(--blue);  background: var(--blue-bg);  border: 1px solid var(--blue-border); }
+  .tier-tag:active { opacity: 0.7; }
+  .tier-p-steven  { color: var(--green);      background: var(--green-bg);  border: 1px solid var(--green-border); }
+  .tier-p-rachel  { color: var(--rose);       background: var(--rose-bg);   border: 1px solid var(--rose-border); }
+  .tier-p-mark    { color: var(--teal);       background: var(--teal-bg);   border: 1px solid var(--teal-border); }
+  .tier-p-stewart { color: var(--purple);     background: var(--purple-bg); border: 1px solid var(--purple-border); }
+  .tier-p-sarah   { color: var(--accent);     background: var(--accent-bg); border: 1px solid var(--accent-border); }
+  .tier-p-couple  { color: var(--amber);      background: var(--amber-bg);  border: 1px solid var(--amber-border); }
+  .tier-p-all     { color: var(--blue);       background: var(--blue-bg);   border: 1px solid var(--blue-border); }
+  .tier-p-custom  { color: var(--text-muted); background: var(--bg-muted);  border: 1px solid var(--border); }
+  .tier-p-none    { color: var(--text-faint); background: var(--bg-muted);  border: 1px dashed var(--border); }
 
   .item-note {
     font-size: 11px;
@@ -396,74 +386,192 @@
     z-index: 999;
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-.gate {
-  position: fixed;
-  inset: 0;
-  background: var(--bg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  z-index: 9999;
-  padding: 32px;
-}
-.gate-title {
-  font-family: var(--font-display);
-  font-size: 28px;
-  font-weight: 300;
-  color: var(--text);
-  text-align: center;
-}
-.gate-title em { font-style: italic; color: #d4937e; }
-.gate-sub {
-  font-size: 12px;
-  color: var(--text-faint);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  text-align: center;
-}
-.gate-input {
-  width: 100%;
-  max-width: 280px;
-  padding: 12px 16px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--bg-card);
-  font-family: var(--font-mono);
-  font-size: 16px;
-  color: var(--text);
-  text-align: center;
-  outline: none;
-}
-.gate-input:focus { border-color: var(--accent); }
-.gate-btn {
-  width: 100%;
-  max-width: 280px;
-  padding: 12px;
-  border-radius: var(--radius-sm);
-  border: none;
-  background: var(--text);
-  color: var(--bg);
-  font-family: var(--font-mono);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  cursor: pointer;
-}
-.gate-btn:active { opacity: 0.85; }
-.gate-error {
-  font-size: 12px;
-  color: var(--accent);
-  min-height: 16px;
-  text-align: center;
-}
+
+  /* ── Gate ── */
+  .gate {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    z-index: 9997;
+    padding: 32px;
+  }
+  .gate-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--text);
+    text-align: center;
+  }
+  .gate-title em { font-style: italic; color: #d4937e; }
+  .gate-sub {
+    font-size: 12px;
+    color: var(--text-faint);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+  .gate-input {
+    width: 100%;
+    max-width: 280px;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    font-family: var(--font-mono);
+    font-size: 16px;
+    color: var(--text);
+    text-align: center;
+    outline: none;
+  }
+  .gate-input:focus { border-color: var(--accent); }
+  .gate-btn {
+    width: 100%;
+    max-width: 280px;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: var(--text);
+    color: var(--bg);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+  }
+  .gate-btn:active { opacity: 0.85; }
+  .gate-error {
+    font-size: 12px;
+    color: var(--accent);
+    min-height: 16px;
+    text-align: center;
+  }
+
+  /* ── Assignment chooser (bottom sheet) ── */
+  .sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 9998;
+  }
+  .sheet-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .sheet {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg);
+    border-radius: 20px 20px 0 0;
+    padding: 12px 20px calc(24px + env(safe-area-inset-bottom, 0px));
+    transform: translateY(100%);
+    transition: transform 0.25s ease;
+    z-index: 9999;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  .sheet.open { transform: translateY(0); }
+  .sheet-handle {
+    width: 40px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 0 auto 16px;
+  }
+  .sheet-label {
+    font-size: 10px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+  .sheet-item-name {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 300;
+    color: var(--text);
+    margin-bottom: 16px;
+    line-height: 1.3;
+  }
+  .sheet-options {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .sheet-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .sheet-option:active { background: var(--bg-muted); }
+  .sheet-option.checked.p-steven  { background: var(--green-bg);  border-color: var(--green-border); }
+  .sheet-option.checked.p-rachel  { background: var(--rose-bg);   border-color: var(--rose-border); }
+  .sheet-option.checked.p-mark    { background: var(--teal-bg);   border-color: var(--teal-border); }
+  .sheet-option.checked.p-stewart { background: var(--purple-bg); border-color: var(--purple-border); }
+  .sheet-option.checked.p-sarah   { background: var(--accent-bg); border-color: var(--accent-border); }
+  .sheet-option-chk {
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+  .sheet-option.checked.p-steven  .sheet-option-chk { background: var(--green);  border-color: var(--green);  color: #fff; }
+  .sheet-option.checked.p-rachel  .sheet-option-chk { background: var(--rose);   border-color: var(--rose);   color: #fff; }
+  .sheet-option.checked.p-mark    .sheet-option-chk { background: var(--teal);   border-color: var(--teal);   color: #fff; }
+  .sheet-option.checked.p-stewart .sheet-option-chk { background: var(--purple); border-color: var(--purple); color: #fff; }
+  .sheet-option.checked.p-sarah   .sheet-option-chk { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .sheet-option-name {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--text);
+    flex: 1;
+    font-weight: 500;
+  }
+  .sheet-done {
+    width: 100%;
+    padding: 13px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: var(--text);
+    color: var(--bg);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+  }
+  .sheet-done:active { opacity: 0.85; }
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 </head>
 <body>
+
+<!-- Password gate -->
 <div class="gate" id="gate">
   <p class="gate-sub">Shenandoah National Park</p>
   <p class="gate-title">Camping Trip<br><em>Packing List</em></p>
@@ -473,29 +581,19 @@
   <button class="gate-btn" onclick="tryUnlock()">Unlock</button>
   <p class="gate-error" id="gate-error"></p>
 </div>
+
 <!-- Header -->
 <div class="header">
   <p class="header-eyebrow">Shenandoah National Park</p>
   <h1 class="header-title">Lewis Mountain Campground<br><em>Packing List</em></h1>
-  <p class="header-meta">June 5-7 ·&nbsp; 5 adults ·&nbsp;Low–medium experience</p>
+  <p class="header-meta">June 5–7 &nbsp;·&nbsp; 5 adults &nbsp;·&nbsp; Low–medium experience</p>
   <div class="progress-row">
     <div class="progress-track"><div class="progress-fill" id="prog-fill"></div></div>
     <div class="progress-text" id="prog-text">0 / 0</div>
   </div>
-  <div class="io-row">
-    <button class="io-btn" onclick="exportData()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Export
-    </button>
-    <button class="io-btn" onclick="document.getElementById('import-input').click()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-      Import
-    </button>
-    <input type="file" id="import-input" accept=".json" style="display:none" onchange="importData(event)">
-  </div>
 </div>
 
-<!-- Scenario -->
+<!-- Scenario tabs -->
 <div class="section">
   <div class="section-label">Shelter scenario</div>
   <div class="tabs" id="tabs"></div>
@@ -506,10 +604,14 @@
 <div class="section" style="margin-top:12px;">
   <div class="section-label">Filter by packer</div>
   <div class="filters">
-    <button class="filter-btn" data-filter="all"      onclick="setFilter('all')">All items</button>
-    <button class="filter-btn" data-filter="personal" onclick="setFilter('personal')">Personal (you)</button>
-    <button class="filter-btn" data-filter="couple"   onclick="setFilter('couple')">You + partner</button>
-    <button class="filter-btn" data-filter="group"    onclick="setFilter('group')">All five</button>
+    <button class="filter-btn" data-filter="all"          onclick="setFilter('all')">All items</button>
+    <button class="filter-btn" data-filter="Steven"       onclick="setFilter('Steven')">Steven</button>
+    <button class="filter-btn" data-filter="Rachel"       onclick="setFilter('Rachel')">Rachel</button>
+    <button class="filter-btn" data-filter="Mark"         onclick="setFilter('Mark')">Mark</button>
+    <button class="filter-btn" data-filter="Stewart"      onclick="setFilter('Stewart')">Stewart</button>
+    <button class="filter-btn" data-filter="Sarah"        onclick="setFilter('Sarah')">Sarah</button>
+    <button class="filter-btn" data-filter="stevenRachel" onclick="setFilter('stevenRachel')">Steven + Rachel</button>
+    <button class="filter-btn" data-filter="allFive"      onclick="setFilter('allFive')">All five</button>
   </div>
 </div>
 
@@ -525,27 +627,81 @@
   <div class="note-item"><span class="note-icon">📞</span><span><strong>Cabin linens:</strong> If using Scenario B or C, call Lewis Mountain to confirm what bedding the cabin includes before packing.</span></div>
 </div>
 
+<!-- Assignment chooser -->
+<div class="sheet-backdrop" id="sheet-backdrop" onclick="closeChooser()"></div>
+<div class="sheet" id="sheet">
+  <div class="sheet-handle"></div>
+  <p class="sheet-label">Who is packing this?</p>
+  <p class="sheet-item-name" id="sheet-item-name"></p>
+  <div class="sheet-options" id="sheet-options"></div>
+  <button class="sheet-done" onclick="closeChooser()">Done</button>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
+// ── Firebase config ──
 const firebaseConfig = {
-  apiKey: "AIzaSyDk38lSNWPSE3FQ9fc--8zTkFuMX-SK8_M",
-  authDomain: "shenandoah-packing-list.firebaseapp.com",
-  projectId: "shenandoah-packing-list",
-  storageBucket: "shenandoah-packing-list.firebasestorage.app",
-  messagingSenderId: "1072868162373",
-  appId: "1:1072868162373:web:86973deaa8ff5752d7dc2c"
+  apiKey: "YOUR_API_KEY_HERE",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MSG_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const DOC = db.collection("checklists").doc("shenandoah-2026");
 
-function saveToFirestore() {
-  DOC.set({ checked, scenario, filter })
-    .catch(() => showToast("Save failed — check connection"));
+// ── Packer model ──
+const PEOPLE = ["Steven", "Rachel", "Mark", "Stewart", "Sarah"];
+const DEFAULT_ASSIGN = {
+  personal: ["Steven"],
+  couple:   ["Steven", "Rachel"],
+  group:    ["Steven", "Rachel", "Mark", "Stewart", "Sarah"]
+};
+const VALID_FILTERS = ["all", "Steven", "Rachel", "Mark", "Stewart", "Sarah", "stevenRachel", "allFive"];
+
+function canonArr(arr) {
+  return [...arr].sort((a, b) => PEOPLE.indexOf(a) - PEOPLE.indexOf(b));
 }
+function canonStr(arr) {
+  return canonArr(arr).join("|");
+}
+function getAssignment(k) {
+  if (assignments[k]) return assignments[k];
+  const info = itemMap[k];
+  if (!info) return [];
+  return DEFAULT_ASSIGN[info.tier] || [];
+}
+function filterMatches(assign, f) {
+  if (f === "all") return true;
+  const c = canonStr(assign);
+  if (["Steven","Rachel","Mark","Stewart","Sarah"].includes(f)) return c === f;
+  if (f === "stevenRachel") return c === "Steven|Rachel";
+  if (f === "allFive") return c === PEOPLE.join("|");
+  return false;
+}
+function badgeFor(assign) {
+  const c = canonStr(assign);
+  if (c === "Steven")  return { label: "Steven",  cls: "p-steven" };
+  if (c === "Rachel")  return { label: "Rachel",  cls: "p-rachel" };
+  if (c === "Mark")    return { label: "Mark",    cls: "p-mark" };
+  if (c === "Stewart") return { label: "Stewart", cls: "p-stewart" };
+  if (c === "Sarah")   return { label: "Sarah",   cls: "p-sarah" };
+  if (c === "Steven|Rachel")    return { label: "Steven + Rachel", cls: "p-couple" };
+  if (c === PEOPLE.join("|"))   return { label: "All five",        cls: "p-all" };
+  if (assign.length === 0)      return { label: "Unassigned",      cls: "p-none" };
+  if (assign.length <= 2)       return { label: canonArr(assign).join(" + "), cls: "p-custom" };
+  return { label: `${assign.length} packers`, cls: "p-custom" };
+}
+function personClass(p) {
+  return { Steven: "p-steven", Rachel: "p-rachel", Mark: "p-mark", Stewart: "p-stewart", Sarah: "p-sarah" }[p];
+}
+
+// ── Scenarios & data ──
 const SC = {
   allTent: {
     label: "A: All-tent",
@@ -685,15 +841,31 @@ const BASE = [
   ]}
 ];
 
-let scenario = "allTent", filter = "all", checked = {}, collapsed = {};
+// ── State ──
+let scenario = "allTent";
+let filter = "all";
+let checked = {};
+let assignments = {};
+let collapsed = {};
+let itemMap = {};
+let chooserKey = null;
 
+// ── Data helpers ──
 function allCats() {
   const shelter = { cat: "Shelter & sleep", icon: "⛺", isScenario: true, items: SHELTER[scenario].map((it, i) => ({ ...it, oi: i })) };
   return [shelter, ...BASE.map(c => ({ ...c, items: c.items.map((it, i) => ({ ...it, oi: i })) }))];
 }
+function buildItemMap() {
+  itemMap = {};
+  for (const c of allCats()) {
+    for (const it of c.items) {
+      itemMap[key(c.cat, it.oi)] = { tier: it.t, name: it.n };
+    }
+  }
+}
 function visibleCats() {
   return allCats()
-    .map(c => ({ ...c, items: filter === "all" ? c.items : c.items.filter(it => it.t === filter) }))
+    .map(c => ({ ...c, items: c.items.filter(it => filterMatches(getAssignment(key(c.cat, it.oi)), filter)) }))
     .filter(c => c.items.length > 0);
 }
 function key(cat, oi) { return `${scenario}|${cat}|${oi}`; }
@@ -712,37 +884,13 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove("show"), 2400);
 }
 
-function exportData() {
-  const payload = { version: 1, scenario, filter, checked, exportedAt: new Date().toISOString() };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url; a.download = "shenandoah-packing-list.json";
-  document.body.appendChild(a); a.click();
-  document.body.removeChild(a); URL.revokeObjectURL(url);
-  showToast("Saved — shenandoah-packing-list.json");
+// ── Firestore ──
+function saveToFirestore() {
+  DOC.set({ checked, scenario, filter, assignments })
+    .catch(() => showToast("Save failed — check connection"));
 }
 
-function importData(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function (ev) {
-    try {
-      const data = JSON.parse(ev.target.result);
-      if (typeof data.checked !== "object" || !data.scenario) { showToast("Import failed — unrecognized file"); return; }
-      checked = data.checked || {};
-      if (SC[data.scenario]) scenario = data.scenario;
-      if (["all", "personal", "couple", "group"].includes(data.filter)) filter = data.filter;
-      render();
-      saveToFirestore();
-      showToast("Imported successfully");
-    } catch { showToast("Import failed — could not parse file"); }
-    e.target.value = "";
-  };
-  reader.readAsText(file);
-}
-
+// ── Rendering ──
 function renderTabs() {
   document.getElementById("tabs").innerHTML = Object.entries(SC).map(([id, s]) =>
     `<button class="tab-btn${scenario === id ? " active" : ""}" onclick="setScenario('${id}')">${s.label}</button>`
@@ -777,13 +925,13 @@ function renderCats() {
     const rows = items.map(it => {
       const k = key(cat, it.oi);
       const done = !!checked[k];
-      const tierLabel = it.t === "personal" ? "Personal" : it.t === "couple" ? "You + partner" : "All five";
-      return `<div class="item-row${done ? " done" : ""} t-${it.t}" onclick="toggleItem('${k}')">
+      const badge = badgeFor(getAssignment(k));
+      return `<div class="item-row${done ? " done" : ""}" onclick="toggleItem('${k}')">
         <div class="chk">${done ? "✓" : ""}</div>
         <div class="item-body">
           <div class="item-name-row">
             <span class="item-name">${it.n}</span>
-            <span class="tier-tag tier-${it.t}">${tierLabel}</span>
+            <span class="tier-tag tier-${badge.cls}" onclick="openChooser(event, '${k}')">${badge.label}</span>
           </div>
           ${it.note ? `<p class="item-note">${it.note}</p>` : ""}
         </div>
@@ -801,12 +949,66 @@ function renderCats() {
   }).join("");
 }
 
-function render() { renderTabs(); renderScNote(); renderFilters(); renderProgress(); renderCats(); }
-function setScenario(s) { scenario = s; render(); saveToFirestore(); }
-function setFilter(f) { filter = f; render(); saveToFirestore(); }
-function toggleCat(cat) { collapsed[cat] = collapsed[cat] !== true; renderCats(); }
-function toggleItem(k) { checked[k] = !checked[k]; render(); saveToFirestore(); }
+function render() {
+  buildItemMap();
+  renderTabs();
+  renderScNote();
+  renderFilters();
+  renderProgress();
+  renderCats();
+}
 
+// ── Event handlers ──
+function setScenario(s) { scenario = s; render(); saveToFirestore(); }
+function setFilter(f)   { filter = f; render(); saveToFirestore(); }
+function toggleCat(cat) { collapsed[cat] = collapsed[cat] !== true; renderCats(); }
+function toggleItem(k)  { checked[k] = !checked[k]; render(); saveToFirestore(); }
+
+// ── Assignment chooser ──
+function openChooser(e, k) {
+  e.stopPropagation();
+  chooserKey = k;
+  const info = itemMap[k];
+  document.getElementById("sheet-item-name").textContent = info ? info.name : "";
+  renderSheetOptions();
+  document.getElementById("sheet-backdrop").classList.add("open");
+  document.getElementById("sheet").classList.add("open");
+}
+
+function renderSheetOptions() {
+  if (!chooserKey) return;
+  const current = getAssignment(chooserKey);
+  document.getElementById("sheet-options").innerHTML = PEOPLE.map(p => {
+    const isChecked = current.includes(p);
+    const pCls = personClass(p);
+    return `<div class="sheet-option ${pCls} ${isChecked ? "checked" : ""}" onclick="togglePerson('${p}')">
+      <div class="sheet-option-chk">${isChecked ? "✓" : ""}</div>
+      <div class="sheet-option-name">${p}</div>
+    </div>`;
+  }).join("");
+}
+
+function togglePerson(person) {
+  if (!chooserKey) return;
+  let current = getAssignment(chooserKey).slice();
+  if (current.includes(person)) {
+    current = current.filter(p => p !== person);
+  } else {
+    current.push(person);
+  }
+  assignments[chooserKey] = canonArr(current);
+  renderSheetOptions();
+  render();
+  saveToFirestore();
+}
+
+function closeChooser() {
+  chooserKey = null;
+  document.getElementById("sheet-backdrop").classList.remove("open");
+  document.getElementById("sheet").classList.remove("open");
+}
+
+// ── Password gate ──
 const PASS = "0429"; // change this to whatever you want
 
 function tryUnlock() {
@@ -828,8 +1030,9 @@ function startApp() {
     if (snap.exists) {
       const data = snap.data();
       checked = data.checked || {};
+      assignments = data.assignments || {};
       if (SC[data.scenario]) scenario = data.scenario;
-      if (["all","personal","couple","group"].includes(data.filter)) filter = data.filter;
+      if (VALID_FILTERS.includes(data.filter)) filter = data.filter;
     }
     render();
   }, () => {
@@ -840,9 +1043,7 @@ function startApp() {
 
 // If already signed in from a previous visit on this device, skip the gate
 firebase.auth().onAuthStateChanged(user => {
-  if (user) {
-    startApp();
-  }
+  if (user) startApp();
 });
 </script>
 </body>
